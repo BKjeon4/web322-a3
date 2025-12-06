@@ -196,13 +196,14 @@ app.use((req, res) => {
    Start Server
 --------------------------- */
 
-projectService
-  .initialize()
-  .then(() => {
-    app.listen(PORT, () =>
-      console.log(`Server listening on http://localhost:${PORT}`)
-    );
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// projectService
+//   .initialize()
+//   .then(() => {
+//     app.listen(PORT, () =>
+//       console.log(`Server listening on http://localhost:${PORT}`)
+//     );
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
+module.exports = app;
