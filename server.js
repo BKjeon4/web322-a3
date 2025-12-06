@@ -10,10 +10,16 @@
 Published URL: 
 ********************************************************************************/
 
+
+
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const projectService = require("./modules/projects");
+
+const path = require("path");
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 require("dotenv").config();
 
