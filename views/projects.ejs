@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>All Climate Solutions</title>
+
+    <!-- Tailwind + DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.14/dist/full.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-base-100">
+
+<%- include("partials/navbar") %>
+
+<div class="container mx-auto px-6 py-10">
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-10">
+        <h1 class="text-3xl font-bold">All Climate Solutions</h1>
+
+        <% if (session.user) { %>
+        <a href="/solutions/addProject" class="btn btn-primary btn-sm">
+            Add New Project
+        </a>
+        <% } %>
+    </div>
+
+    <!-- Grid of Project Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
+        <% projects.forEach(project => { %>
+
+        <div class="card w-full bg-base-100 shadow-xl border rounded-xl">
+
+            <!-- Project Image -->
+            <figure class="h-48 overflow-hidden rounded-t-xl">
+                <img 
+                    src="<%= project.feature_img_url %>" 
+                    alt="<%= project.title %>"
+                    class="w-full h-full object-cover"
+                />
+            </figure>
+
+            <!-- Card Content -->
+            <div class="card-body px-6 py-4">
+
+                <h2 class="card-title text-lg font-semibold"><%= project.title %></h2>
+
+                <p class="text-sm opacity-60 mb-2"><%= project.sector %></p>
+
+                <p class="text-sm text-gray-700 h-16 overflow-hidden">
+                    <%= project.summary_short.substring(0, 130) %>...
+                </p>
+
+                <div class="card-actions justify-end mt-4">
+                    <a href="/solutions/project/<%= project.id %>" class="btn btn-outline btn-sm">
+                        View
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <% }) %>
+
+    </div>
+
+</div>
+
+</body>
+</html>

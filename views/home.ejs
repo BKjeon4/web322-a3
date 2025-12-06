@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dim">
+<head>
+  <meta charset="UTF-8">
+  <title>Climate Solutions | Home</title>
+
+  <!-- Tailwind + DaisyUI -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.14/dist/full.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body class="bg-base-100">
+
+  <!-- Navbar -->
+  <%- include('partials/navbar') %>
+
+  <!-- Hero Section -->
+  <section class="hero bg-base-200 min-h-[60vh] flex flex-col justify-center items-center text-center">
+    <div class="max-w-2xl px-4">
+      <h1 class="text-5xl font-bold mb-4">Welcome to Climate Solutions</h1>
+      <p class="text-lg mb-6 text-gray-300">
+        Discover projects that drive innovation and sustainability for a cleaner future.
+      </p>
+      <a href="/solutions/projects" class="btn btn-success btn-lg normal-case font-semibold text-black">
+        Explore Projects
+      </a>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="container mx-auto py-16 px-6">
+    <div class="grid md:grid-cols-3 gap-8">
+
+      <% projects.slice(0, 3).forEach(p => { %>
+
+        <div class="card bg-base-200 shadow-xl hover:scale-[1.02] transition-transform duration-300">
+          <!-- Image -->
+          <figure>
+            <img src="<%= p.feature_img_url %>"
+                 alt="<%= p.title %>"
+                 class="w-full h-48 object-cover rounded-t-lg" />
+          </figure>
+
+          <!-- Card Body -->
+          <div class="card-body">
+            <h2 class="card-title"><%= p.title %></h2>
+
+            <!-- Sector Name -->
+            <p class="text-sm text-gray-400 mb-2">
+              Sector: <%= p.sector %>
+            </p>
+
+            <!-- Description -->
+            <p class="text-gray-300">
+              <%= p.summary_short %>
+            </p>
+
+            <!-- Details Button -->
+            <div class="card-actions justify-end mt-4">
+              <a href="/solutions/project/<%= p.id %>" class="btn btn-sm btn-neutral normal-case">
+                Details
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      <% }) %>
+
+    </div>
+  </section>
+
+</body>
+</html>
