@@ -1,25 +1,7 @@
-/******************************************************************************** 
-*  WEB322 – Assignment 3
-*  
-*  I declare that this assignment is my own work in accordance with Seneca's 
-*  Academic Integrity Policy: 
-*  
-*  https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html 
-*  
-*  Name: Byungwook Jeon   Student ID: 011654159   Date: 2025-12-05
-Published URL: 
-********************************************************************************/
-
-
-
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const projectService = require("./modules/projects");
-
-const path = require("path");
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "ejs");
 
 require("dotenv").config();
 
@@ -27,11 +9,16 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 /* --------------------------
+   View Engine Setup
+--------------------------- */
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+
+/* --------------------------
    Middleware
 --------------------------- */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-app.set("view engine", "ejs");
 
 /* --------------------------
    Session Setup
@@ -135,6 +122,7 @@ app.get("/solutions/deleteProject/:id", ensureLogin, async (req, res) => {
   }
 });
 
+/* LOGIN / LOGOUT */
 app.get("/login", (req, res) => {
   res.render("login", { userName: "", errorMessage: "" });
 });
@@ -158,17 +146,21 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 
-app.use((req, res) => res.status(404).render("404", { message: "Page Not Found" }));
+/* 404 HANDLER */
+app.use((req, res) =>
+  res.status(404).render("404", { message: "Page Not Found" })
+);
 
 /* --------------------------
-   Export for Vercel
+   Initialize + Export
 --------------------------- */
-
 projectService.initialize();
 
-if (process.env.VERCEL) {
-  module.exports = app; // Vercel uses this
-} else {
+/* Vercel uses module.exports = app */
+module.exports = app;
+
+/* Local development only */
+if (!process.env.VERCEL) {
   app.listen(PORT, () =>
     console.log(`Server running locally at http://localhost:${PORT}`)
   );
