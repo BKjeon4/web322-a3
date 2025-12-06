@@ -1,3 +1,18 @@
+/********************************************************************************
+* WEB322 – Assignment 03
+*
+* I declare that this assignment is my own work in accordance with Seneca's
+* Academic Integrity Policy:
+*
+* https://www.senecacollege.ca/about/policies/academic-integrity-policy.html
+*
+* Name: byungwook jeon   Student ID:011654159   Date:12/05/2025
+*
+* Published URL:https://web322-a3-weld.vercel.app/
+*
+********************************************************************************/
+
+
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
