@@ -18,15 +18,13 @@ const projectService = require("./modules/projects");
 require("dotenv").config();
 
 const app = express();
-//const PORT = process.env.PORT || 8080;
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
 /* --------------------------
    Middleware
 --------------------------- */
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
-
 app.set("view engine", "ejs");
 
 /* --------------------------
@@ -40,7 +38,6 @@ app.use(
   })
 );
 
-// make session available in EJS
 app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
@@ -50,75 +47,52 @@ app.use((req, res, next) => {
    AUTH Middleware
 --------------------------- */
 function ensureLogin(req, res, next) {
-  if (!req.session.user) {
-    return res.redirect("/login");
-  }
+  if (!req.session.user) return res.redirect("/login");
   next();
 }
 
 /* --------------------------
    ROUTES
 --------------------------- */
-// About
-app.get("/about", (req, res) => {
-  res.render("about");
-});
+
+app.get("/about", (req, res) => res.render("about"));
 
 app.get("/", async (req, res) => {
   try {
     const projects = await projectService.getAllProjects();
     res.render("home", { projects });
-  } catch (err) {
+  } catch {
     res.render("home", { projects: [] });
   }
 });
 
-
-
-// All Projects
 app.get("/solutions/projects", async (req, res) => {
   try {
-    const sectorName = req.query.sector;
+    let projects = await projectService.getAllProjects();
 
-    let projects;
-
-    if (sectorName) {
-      // sector filtering
-      projects = await projectService.getProjectsBySector(sectorName);
-    } else {
-      // all projects
-      projects = await projectService.getAllProjects();
+    if (req.query.sector) {
+      projects = await projectService.getProjectsBySector(req.query.sector);
     }
 
     res.render("projects", { projects });
-
   } catch (err) {
     res.status(500).render("500", { message: err });
   }
 });
 
-
-// Project by ID
 app.get("/solutions/project/:id", async (req, res) => {
   try {
     const project = await projectService.getProjectById(req.params.id);
-
-    if (!project) {
-      return res.status(404).render("404", { message: "Project not found" });
-    }
-
     res.render("project", { project });
-  } catch (err) {
-    res.status(500).render("500", { message: err });
+  } catch {
+    res.status(404).render("404", { message: "Project not found" });
   }
 });
 
-// Add Project (GET)
 app.get("/solutions/addProject", ensureLogin, (req, res) => {
   res.render("addProject");
 });
 
-// Add Project (POST)
 app.post("/solutions/addProject", ensureLogin, async (req, res) => {
   try {
     await projectService.addProject(req.body);
@@ -128,20 +102,15 @@ app.post("/solutions/addProject", ensureLogin, async (req, res) => {
   }
 });
 
-// Edit Project (GET)
 app.get("/solutions/editProject/:id", ensureLogin, async (req, res) => {
   try {
     const project = await projectService.getProjectById(req.params.id);
-    if (!project) {
-      return res.status(404).render("404", { message: "Project not found" });
-    }
     res.render("editProject", { project });
-  } catch (err) {
-    res.status(500).render("500", { message: err });
+  } catch {
+    res.status(404).render("404", { message: "Project not found" });
   }
 });
 
-// Edit Project (POST)
 app.post("/solutions/editProject", ensureLogin, async (req, res) => {
   try {
     await projectService.updateProject(req.body);
@@ -151,7 +120,6 @@ app.post("/solutions/editProject", ensureLogin, async (req, res) => {
   }
 });
 
-// Delete Project
 app.get("/solutions/deleteProject/:id", ensureLogin, async (req, res) => {
   try {
     await projectService.deleteProject(req.params.id);
@@ -161,49 +129,41 @@ app.get("/solutions/deleteProject/:id", ensureLogin, async (req, res) => {
   }
 });
 
-// Login page
 app.get("/login", (req, res) => {
   res.render("login", { userName: "", errorMessage: "" });
 });
 
-// Login POST
 app.post("/login", (req, res) => {
   const { userName, password } = req.body;
 
   if (userName === "admin" && password === "admin") {
     req.session.user = { userName };
-    res.redirect("/solutions/projects");
-  } else {
-    res.render("login", {
-      userName,
-      errorMessage: "Invalid username or password.",
-    });
+    return res.redirect("/solutions/projects");
   }
+
+  res.render("login", {
+    userName,
+    errorMessage: "Invalid username or password.",
+  });
 });
 
-// Logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.redirect("/");
 });
 
-// 404 Handler
-app.use((req, res) => {
-  res.status(404).render("404", { message: "Page Not Found" });
-});
+app.use((req, res) => res.status(404).render("404", { message: "Page Not Found" }));
 
 /* --------------------------
-   Start Server
+   Export for Vercel
 --------------------------- */
 
-// projectService
-//   .initialize()
-//   .then(() => {
-//     app.listen(PORT, () =>
-//       console.log(`Server listening on http://localhost:${PORT}`)
-//     );
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-module.exports = app;
+projectService.initialize();
+
+if (process.env.VERCEL) {
+  module.exports = app; // Vercel uses this
+} else {
+  app.listen(PORT, () =>
+    console.log(`Server running locally at http://localhost:${PORT}`)
+  );
+}
